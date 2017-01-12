@@ -9,10 +9,14 @@
 import UIKit
 
 class EmptyItemTableViewCell: UITableViewCell {
+    @IBOutlet weak var emptyDescription: UITextField!
+
+    @IBOutlet weak var addButton: UIButton!
+    
 
     override func awakeFromNib() {
         super.awakeFromNib()
-        // Initialization code
+
     }
 
     override func setSelected(_ selected: Bool, animated: Bool) {

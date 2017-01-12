@@ -41,6 +41,7 @@ class ToDoListTableViewController: UITableViewController, UITextFieldDelegate {
         
     }
     
+    // update items array after finish cell
     @IBAction func updateItem(_ sender: UITextField) {
         toDoItems[sender.tag].itemDescription = sender.text
         
@@ -80,7 +81,7 @@ class ToDoListTableViewController: UITableViewController, UITextFieldDelegate {
     
     override func numberOfSections(in tableView: UITableView) -> Int {
         // return the number of sections
-        return 2
+        return 1
     }
     
     override func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
@@ -95,34 +96,52 @@ class ToDoListTableViewController: UITableViewController, UITextFieldDelegate {
     
      override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
 
-        // display each item
-        if let cell = tableView.dequeueReusableCell(withIdentifier: "ToDoTableViewCell", for: indexPath) as? ToDoItemTableViewCell {
-            
-            // gets correct item from toDoItems array
-            let item = toDoItems[indexPath.row]
-            
-            // configures cell appearance
-            if item.completed {
-                cell.toggleButton.backgroundColor = UIColor.blue
-                print("should be blue")
+        // already created to do list items
+        if indexPath.section == 0 {
+            // display each to do list item
+            if let cell = tableView.dequeueReusableCell(withIdentifier: "ToDoTableViewCell", for: indexPath) as? ToDoItemTableViewCell {
+                
+                // gets correct item from toDoItems array
+                let item = toDoItems[indexPath.row]
+                
+                // configures cell appearance
+                if item.completed {
+                    cell.toggleButton.backgroundColor = UIColor.blue
+                    print("should be blue")
+                }
+                cell.itemDescription.text = item.itemDescription
+                
+                // sets tags to connect cell with appropriate element in items array
+                cell.toggleButton.tag = indexPath.row
+                cell.itemDescription.tag = indexPath.row
+                
+                
+                return cell
+                
             }
-            cell.itemDescription.text = item.itemDescription
-            
-            // sets tags to connect cell with appropriate element in items array
-            cell.toggleButton.tag = indexPath.row
-            cell.itemDescription.tag = indexPath.row
-            
-            
-            return cell
+            else {
+                fatalError("Failed to correctly display ToDoItemCells")
+            }
             
         }
         else {
-            fatalError("The dequeued cell is not an instance of MealTableViewCell.")
+            if let cell = tableView.dequeueReusableCell(withIdentifier: "EmptyCell", for: indexPath) as? EmptyItemTableViewCell {
+                // configures empty cell
+                cell.emptyDescription.text = nil
+                return cell
+                
+            }
+            else {
+                fatalError("Failed to correctly display Empty cell!")
+
+            }
+            
         }
-     
+        
 
      }
-     
+    
+
     
     /*
      // Override to support conditional editing of the table view.

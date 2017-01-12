@@ -48,6 +48,7 @@
                                             <constraints>
                                                 <constraint firstAttribute="width" constant="22" id="tVK-SH-3he"/>
                                             </constraints>
+                                            <color key="tintColor" red="0.0" green="0.0" blue="1" alpha="1" colorSpace="calibratedRGB"/>
                                             <connections>
                                                 <action selector="toggleItem:" destination="sQw-Jq-Va6" eventType="touchUpInside" id="mJq-GW-MnD"/>
                                             </connections>
@@ -67,6 +68,7 @@
                                             <constraints>
                                                 <constraint firstAttribute="width" constant="22" id="OIs-PU-bbp"/>
                                             </constraints>
+                                            <color key="tintColor" red="0.0" green="0.0" blue="1" alpha="1" colorSpace="calibratedRGB"/>
                                         </button>
                                     </subviews>
                                     <constraints>
@@ -86,7 +88,7 @@
                                     <outlet property="toggleButton" destination="0Yg-aC-332" id="uTx-Iq-A4P"/>
                                 </connections>
                             </tableViewCell>
-                            <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" selectionStyle="default" indentationWidth="10" id="W5t-w2-IZp" customClass="EmptyItemTableViewCell" customModule="ToDoList" customModuleProvider="target">
+                            <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" selectionStyle="default" indentationWidth="10" reuseIdentifier="EmptyCell" id="W5t-w2-IZp" customClass="EmptyItemTableViewCell" customModule="ToDoList" customModuleProvider="target">
                                 <rect key="frame" x="0.0" y="72" width="375" height="44"/>
                                 <autoresizingMask key="autoresizingMask"/>
                                 <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" tableViewCell="W5t-w2-IZp" id="0sJ-mA-Znr">
@@ -96,9 +98,24 @@
                                         <button opaque="NO" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="contactAdd" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="PEY-58-Uhc">
                                             <rect key="frame" x="17" y="8" width="22" height="22"/>
                                             <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                            <color key="tintColor" red="0.0" green="0.0" blue="1" alpha="1" colorSpace="calibratedRGB"/>
+                                            <connections>
+                                                <action selector="addItem:" destination="W5t-w2-IZp" eventType="touchUpInside" id="FUq-Je-Pwm"/>
+                                            </connections>
                                         </button>
+                                        <textField opaque="NO" clipsSubviews="YES" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="left" contentVerticalAlignment="center" borderStyle="roundedRect" textAlignment="natural" minimumFontSize="17" translatesAutoresizingMaskIntoConstraints="NO" id="dNB-vi-ivL">
+                                            <rect key="frame" x="55" y="8" width="269" height="30"/>
+                                            <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                            <nil key="textColor"/>
+                                            <fontDescription key="fontDescription" type="system" pointSize="14"/>
+                                            <textInputTraits key="textInputTraits"/>
+                                        </textField>
                                     </subviews>
                                 </tableViewCellContentView>
+                                <connections>
+                                    <outlet property="addButton" destination="PEY-58-Uhc" id="Xnx-yA-FMM"/>
+                                    <outlet property="emptyDescription" destination="dNB-vi-ivL" id="U8m-pn-fOa"/>
+                                </connections>
                             </tableViewCell>
                         </prototypes>
                         <connections>
@@ -107,12 +124,34 @@
                         </connections>
                     </tableView>
                     <navigationItem key="navigationItem" id="Qg6-fs-VBh">
-                        <barButtonItem key="rightBarButtonItem" systemItem="add" id="1LP-kf-NDg"/>
+                        <barButtonItem key="rightBarButtonItem" systemItem="add" id="1LP-kf-NDg">
+                            <connections>
+                                <segue destination="Fyt-3N-vF1" kind="show" id="NIi-hC-cnc"/>
+                            </connections>
+                        </barButtonItem>
                     </navigationItem>
                 </tableViewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="hgs-4M-hU5" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
             <point key="canvasLocation" x="-740" y="-430.43478260869568"/>
+        </scene>
+        <!--View Controller-->
+        <scene sceneID="J2O-F1-tOF">
+            <objects>
+                <viewController id="Fyt-3N-vF1" sceneMemberID="viewController">
+                    <layoutGuides>
+                        <viewControllerLayoutGuide type="top" id="tk4-Yw-CHb"/>
+                        <viewControllerLayoutGuide type="bottom" id="lyX-Xu-LFT"/>
+                    </layoutGuides>
+                    <view key="view" contentMode="scaleToFill" id="Vm5-oV-h6I">
+                        <rect key="frame" x="0.0" y="0.0" width="375" height="667"/>
+                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+                    </view>
+                </viewController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="Jr0-JS-T7Q" userLabel="First Responder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="190" y="-430"/>
         </scene>
     </scenes>
 </document>
