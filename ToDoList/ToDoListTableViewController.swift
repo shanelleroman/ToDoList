@@ -13,32 +13,45 @@ class ToDoListTableViewController: UITableViewController, UITextFieldDelegate {
     // todo list items
     var toDoItems = [ToDoItem] ()
     
-    var emptyItem: ToDoItem?
     
     // MARK: private functions
     private func loadItems() {
         // sample items for testing
-        if let item1 = ToDoItem(completed: false, itemDescription: "finish project") {
+        
+        
+        if let item1 = ToDoItem(completed: false, itemDescription: "finish project", timeCreated: NSDate(), timeCompleted: nil) {
             toDoItems.append(item1)
         }
         
     }
-
+    
     
     // blue - completed, white - not completed!
     // Toggles button color and updates appropriate ToDoItem's properties
     @IBAction private func toggleItem(_ sender: UIButton) {
-    
+        
         if sender.backgroundColor != UIColor.blue {
             sender.backgroundColor = UIColor.blue
             toDoItems[sender.tag].completed = true
+            toDoItems[sender.tag].timeCompleted = NSDate()
             
         }
         else {
             sender.backgroundColor = UIColor.white
             toDoItems[sender.tag].completed = false
+            toDoItems[sender.tag].timeCompleted = nil
         }
         
+    }
+    
+    // MARK: actions
+    @IBAction func unwindToList(sender: UIStoryboardSegue) {
+        if let sourceViewController = sender.source as? AddItemViewController, let newItem = sourceViewController.toDoItem {
+            // add the new Item to the list on the screen
+            let newIndexPath = IndexPath(row: toDoItems.count, section: 0)
+            toDoItems.append(newItem)
+            tableView.insertRows(at: [newIndexPath], with: .automatic)
+        }
     }
     
     // update items array after finish cell
@@ -46,7 +59,7 @@ class ToDoListTableViewController: UITableViewController, UITextFieldDelegate {
         toDoItems[sender.tag].itemDescription = sender.text
         
     }
-
+    
     //MARK: generic functions
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -57,10 +70,10 @@ class ToDoListTableViewController: UITableViewController, UITextFieldDelegate {
         // self.clearsSelectionOnViewWillAppear = false
         
         // Uncomment the following line to display an Edit button in the navigation bar for this view controller.
-       // self.navigationItem.rightBarButtonItem = self.editButtonItem
-       /* let addButton = UIBarButtonItem(barButtonSystemItem: UIBarButtonSystemItem.add
-            , target: self, action: "addItem")
-        self.navigationItem.setRightBarButton(addButton, animated: false) */ 
+        self.navigationItem.leftBarButtonItem = self.editButtonItem
+        /* let addButton = UIBarButtonItem(barButtonSystemItem: UIBarButtonSystemItem.add
+         , target: self, action: "addItem")
+         self.navigationItem.setRightBarButton(addButton, animated: false) */
         
         
     }
@@ -94,8 +107,8 @@ class ToDoListTableViewController: UITableViewController, UITextFieldDelegate {
     }
     
     
-     override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-
+    override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
+        
         // already created to do list items
         if indexPath.section == 0 {
             // display each to do list item
@@ -124,6 +137,7 @@ class ToDoListTableViewController: UITableViewController, UITextFieldDelegate {
             }
             
         }
+            // ignore - earlier version
         else {
             if let cell = tableView.dequeueReusableCell(withIdentifier: "EmptyCell", for: indexPath) as? EmptyItemTableViewCell {
                 // configures empty cell
@@ -133,15 +147,15 @@ class ToDoListTableViewController: UITableViewController, UITextFieldDelegate {
             }
             else {
                 fatalError("Failed to correctly display Empty cell!")
-
+                
             }
             
         }
         
-
-     }
+        
+    }
     
-
+    
     
     /*
      // Override to support conditional editing of the table view.
@@ -151,17 +165,19 @@ class ToDoListTableViewController: UITableViewController, UITextFieldDelegate {
      }
      */
     
-    /*
-     // Override to support editing the table view.
-     override func tableView(_ tableView: UITableView, commit editingStyle: UITableViewCellEditingStyle, forRowAt indexPath: IndexPath) {
-     if editingStyle == .delete {
-     // Delete the row from the data source
-     tableView.deleteRows(at: [indexPath], with: .fade)
-     } else if editingStyle == .insert {
-     // Create a new instance of the appropriate class, insert it into the array, and add a new row to the table view
-     }
-     }
-     */
+    
+    // Override to support editing the table view.
+    override func tableView(_ tableView: UITableView, commit editingStyle: UITableViewCellEditingStyle, forRowAt indexPath: IndexPath) {
+        if editingStyle == .delete {
+            // Delete the row from the data source
+            toDoItems.remove(at: indexPath.row)
+            tableView.deleteRows(at: [indexPath], with: .fade)
+            
+        } else if editingStyle == .insert {
+            // Create a new instance of the appropriate class, insert it into the array, and add a new row to the table view
+        }
+    }
+    
     
     /*
      // Override to support rearranging the table view.
@@ -178,14 +194,40 @@ class ToDoListTableViewController: UITableViewController, UITextFieldDelegate {
      }
      */
     
-    /*
-     // MARK: - Navigation
-     
-     // In a storyboard-based application, you will often want to do a little preparation before navigation
-     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
-     // Get the new view controller using segue.destinationViewController.
-     // Pass the selected object to the new view controller.
-     }
-     */
+    
+    // MARK: - Navigation
+    
+    // ID which To Do item has been selected
+    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
+        super.prepare(for: segue, sender: sender)
+        let identifier = segue.identifier ?? ""
+        print(identifier)
+        switch (identifier) {
+        case "addItem": print("add item!!")
+        case "itemInfo":
+            if let itemDetailInfoViewController = segue.destination as? ItemInfoViewController {
+
+                // find the corresponding table Cell for the info button
+                if let buttonPressed = sender as? UIButton{
+                    let selectedItem = toDoItems[buttonPressed.tag]
+                    itemDetailInfoViewController.selectedItem = selectedItem
+                
+                }
+                else {
+                    fatalError("not a TableViewCell")
+                }
+            }
+            else {
+                fatalError("\(segue.destination)")
+                //fatalError("wrong segue Destination")
+            }
+        default: print("not matching!")
+        }
+        
+
+        // Get the new view controller using segue.destinationViewController.
+        // Pass the selected object to the new view controller.
+    }
+    
     
 }

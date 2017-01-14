@@ -15,6 +15,8 @@
 		C012620E1E27F47E005AEA40 /* ToDoItemTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = C012620D1E27F47E005AEA40 /* ToDoItemTableViewCell.swift */; };
 		C01262121E280046005AEA40 /* ToDoItem.swift in Sources */ = {isa = PBXBuildFile; fileRef = C01262111E280046005AEA40 /* ToDoItem.swift */; };
 		C01262161E282A67005AEA40 /* EmptyItemTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = C01262151E282A67005AEA40 /* EmptyItemTableViewCell.swift */; };
+		C0A113191E2A9DBC006E5520 /* AddItemViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = C0A113181E2A9DBC006E5520 /* AddItemViewController.swift */; };
+		C0A1131B1E2ADC6C006E5520 /* ItemInfoViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = C0A1131A1E2ADC6C006E5520 /* ItemInfoViewController.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -28,6 +30,8 @@
 		C012620D1E27F47E005AEA40 /* ToDoItemTableViewCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ToDoItemTableViewCell.swift; sourceTree = "<group>"; };
 		C01262111E280046005AEA40 /* ToDoItem.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ToDoItem.swift; sourceTree = "<group>"; };
 		C01262151E282A67005AEA40 /* EmptyItemTableViewCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = EmptyItemTableViewCell.swift; sourceTree = "<group>"; };
+		C0A113181E2A9DBC006E5520 /* AddItemViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AddItemViewController.swift; sourceTree = "<group>"; };
+		C0A1131A1E2ADC6C006E5520 /* ItemInfoViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ItemInfoViewController.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -66,6 +70,8 @@
 				C01262111E280046005AEA40 /* ToDoItem.swift */,
 				C01261F91E27EC58005AEA40 /* AppDelegate.swift */,
 				C01261FD1E27EC58005AEA40 /* Main.storyboard */,
+				C0A1131A1E2ADC6C006E5520 /* ItemInfoViewController.swift */,
+				C0A113181E2A9DBC006E5520 /* AddItemViewController.swift */,
 				C01262001E27EC58005AEA40 /* Assets.xcassets */,
 				C01262021E27EC58005AEA40 /* LaunchScreen.storyboard */,
 				C01262051E27EC58005AEA40 /* Info.plist */,
@@ -148,9 +154,11 @@
 			files = (
 				C01262161E282A67005AEA40 /* EmptyItemTableViewCell.swift in Sources */,
 				C01261FA1E27EC58005AEA40 /* AppDelegate.swift in Sources */,
+				C0A1131B1E2ADC6C006E5520 /* ItemInfoViewController.swift in Sources */,
 				C012620E1E27F47E005AEA40 /* ToDoItemTableViewCell.swift in Sources */,
 				C01262121E280046005AEA40 /* ToDoItem.swift in Sources */,
 				C012620C1E27F07B005AEA40 /* ToDoListTableViewController.swift in Sources */,
+				C0A113191E2A9DBC006E5520 /* AddItemViewController.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

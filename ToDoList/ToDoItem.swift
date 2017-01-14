@@ -12,17 +12,28 @@ class ToDoItem {
     // MARK: properties
     var completed: Bool
     var itemDescription: String?
+    let timeCreated: NSDate?
+    var timeCompleted: NSDate?
     
     // MARK: initialization
-    init?(completed: Bool, itemDescription: String?)
+    init?(completed: Bool, itemDescription: String?, timeCreated: NSDate?, timeCompleted: NSDate?)
     {
         if let itemInfo = itemDescription {
-            self.completed = completed
+            self.completed = false
             self.itemDescription = itemInfo
+            self.timeCreated = timeCreated
+            self.timeCompleted = nil
         }
         else {
             return nil
         }
+    }
+    
+    func formatTime(time: NSDate) -> String {
+        let formatter = DateFormatter()
+        formatter.dateStyle = .long
+        formatter.timeStyle = .medium
+        return formatter.string(from: time as Date)
     }
     
 }
