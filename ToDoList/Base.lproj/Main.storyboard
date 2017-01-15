@@ -39,7 +39,7 @@
                                 <rect key="frame" x="0.0" y="28" width="375" height="44"/>
                                 <autoresizingMask key="autoresizingMask"/>
                                 <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" tableViewCell="PlK-Tf-We7" id="7b7-g5-XTV">
-                                    <rect key="frame" x="0.0" y="0.0" width="375" height="44"/>
+                                    <rect key="frame" x="0.0" y="0.0" width="375" height="43"/>
                                     <autoresizingMask key="autoresizingMask"/>
                                     <subviews>
                                         <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="0Yg-aC-332">
@@ -76,7 +76,7 @@
                                             </constraints>
                                             <color key="tintColor" red="0.0" green="0.0" blue="1" alpha="1" colorSpace="calibratedRGB"/>
                                             <connections>
-                                                <segue destination="aV6-To-aaQ" kind="show" identifier="itemInfo" id="Awq-A1-gB0"/>
+                                                <segue destination="BRE-IB-0Lt" kind="presentation" identifier="itemInfo" id="mor-XU-l65"/>
                                             </connections>
                                         </button>
                                     </subviews>
@@ -119,7 +119,7 @@
             </objects>
             <point key="canvasLocation" x="-740" y="-430.43478260869568"/>
         </scene>
-        <!--Item Info View Controller-->
+        <!--Individual To Do-->
         <scene sceneID="4zt-s2-CrP">
             <objects>
                 <viewController id="aV6-To-aaQ" customClass="ItemInfoViewController" customModule="ToDoList" customModuleProvider="target" sceneMemberID="viewController">
@@ -154,15 +154,21 @@
                                 <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                                 <fontDescription key="fontDescription" type="system" pointSize="14"/>
                                 <textInputTraits key="textInputTraits" autocapitalizationType="sentences" enablesReturnKeyAutomatically="YES"/>
+                                <connections>
+                                    <outlet property="delegate" destination="aV6-To-aaQ" id="HBx-3m-hbm"/>
+                                </connections>
                             </textView>
                             <segmentedControl opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="top" segmentControlStyle="plain" translatesAutoresizingMaskIntoConstraints="NO" id="Bxj-Oz-b20">
                                 <rect key="frame" x="156" y="406" width="203" height="29"/>
                                 <segments>
-                                    <segment title="None" enabled="NO"/>
-                                    <segment title="!" enabled="NO"/>
-                                    <segment title="!!" enabled="NO"/>
-                                    <segment title="!!!" enabled="NO"/>
+                                    <segment title="None"/>
+                                    <segment title="!"/>
+                                    <segment title="!!"/>
+                                    <segment title="!!!"/>
                                 </segments>
+                                <connections>
+                                    <action selector="changedPriority:" destination="aV6-To-aaQ" eventType="valueChanged" id="U0I-QT-tei"/>
+                                </connections>
                             </segmentedControl>
                             <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Priority" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="NLn-dn-1pH">
                                 <rect key="frame" x="16" y="406" width="100" height="28"/>
@@ -194,7 +200,13 @@
                             <constraint firstItem="Ghe-Pe-iS7" firstAttribute="trailing" secondItem="5ZZ-9v-0hu" secondAttribute="trailing" id="vXW-hZ-aAK"/>
                         </constraints>
                     </view>
-                    <navigationItem key="navigationItem" id="gFZ-c3-eFa"/>
+                    <navigationItem key="navigationItem" title="Individual To Do" id="gFZ-c3-eFa">
+                        <barButtonItem key="leftBarButtonItem" title="Back" id="1fJ-7y-PEP">
+                            <connections>
+                                <segue destination="sxZ-7D-Nyn" kind="unwind" unwindAction="unwindToListWithSender:" id="Wmn-D0-p1x"/>
+                            </connections>
+                        </barButtonItem>
+                    </navigationItem>
                     <connections>
                         <outlet property="itemDescription" destination="bWc-bq-43K" id="C4H-Wc-zP4"/>
                         <outlet property="navigationBar" destination="gFZ-c3-eFa" id="0Ad-DS-PFN"/>
@@ -204,8 +216,9 @@
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="jEM-ab-dws" userLabel="First Responder" sceneMemberID="firstResponder"/>
+                <exit id="sxZ-7D-Nyn" userLabel="Exit" sceneMemberID="exit"/>
             </objects>
-            <point key="canvasLocation" x="373.60000000000002" y="-825.33733133433293"/>
+            <point key="canvasLocation" x="1312.8" y="-825.33733133433293"/>
         </scene>
         <!--New To Do-->
         <scene sceneID="J2O-F1-tOF">
@@ -286,7 +299,7 @@
                 <exit id="e7S-hK-Izb" userLabel="Exit" sceneMemberID="exit"/>
                 <tapGestureRecognizer id="S1i-Z9-sY7"/>
             </objects>
-            <point key="canvasLocation" x="2068" y="-430.43478260869568"/>
+            <point key="canvasLocation" x="3007.1999999999998" y="-430.43478260869568"/>
         </scene>
         <!--Navigation Controller-->
         <scene sceneID="CVV-QN-6KS">
@@ -305,6 +318,24 @@
                 <placeholder placeholderIdentifier="IBFirstResponder" id="SLY-BM-p9c" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
             <point key="canvasLocation" x="210" y="-227"/>
+        </scene>
+        <!--Navigation Controller-->
+        <scene sceneID="eMI-p0-lb0">
+            <objects>
+                <navigationController automaticallyAdjustsScrollViewInsets="NO" id="BRE-IB-0Lt" sceneMemberID="viewController">
+                    <toolbarItems/>
+                    <navigationBar key="navigationBar" contentMode="scaleToFill" id="6PL-Ov-itt">
+                        <rect key="frame" x="0.0" y="0.0" width="375" height="44"/>
+                        <autoresizingMask key="autoresizingMask"/>
+                    </navigationBar>
+                    <nil name="viewControllers"/>
+                    <connections>
+                        <segue destination="aV6-To-aaQ" kind="relationship" relationship="rootViewController" id="J0e-dX-3XG"/>
+                    </connections>
+                </navigationController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="caX-mZ-jMN" userLabel="First Responder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="373.60000000000002" y="-825.33733133433293"/>
         </scene>
     </scenes>
 </document>

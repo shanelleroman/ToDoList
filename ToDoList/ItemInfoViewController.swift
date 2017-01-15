@@ -8,10 +8,11 @@
 
 import UIKit
 
-class ItemInfoViewController: UIViewController {
+class ItemInfoViewController: UIViewController, UITextViewDelegate{
     
     //MARK: properties
     var selectedItem: ToDoItem?
+    var rowIndex: Int?
     
     @IBOutlet weak var navigationBar: UINavigationItem!
     @IBOutlet weak var itemDescription: UITextView!
@@ -22,6 +23,13 @@ class ItemInfoViewController: UIViewController {
 
     override func viewDidLoad() {
         super.viewDidLoad()
+        
+        // add a gesture recognizer to signal when outside of the textView
+        let tap = UITapGestureRecognizer(target: self, action: #selector(ItemInfoViewController.dismissKeyboard))
+        view.addGestureRecognizer(tap)
+        
+        
+        
         if let item = selectedItem {
             // title
             navigationBar.title = "Individual To Do"
@@ -30,6 +38,7 @@ class ItemInfoViewController: UIViewController {
             itemDescription.layer.borderWidth = 1
             itemDescription.layer.cornerRadius = 10
             itemDescription.layer.borderColor = UIColor.black.cgColor
+            itemDescription.isEditable = true
             timeCreated.text = "Time Created: " + item.formatTime(time: item.timeCreated!)
             priorityControl.selectedSegmentIndex = (selectedItem?.priority)!
             if item.completed {
@@ -47,11 +56,28 @@ class ItemInfoViewController: UIViewController {
         super.didReceiveMemoryWarning()
         // Dispose of any resources that can be recreated.
     }
-    
+
     @IBAction func changedPriority(_ sender: UISegmentedControl) {
-        selectedItem?.priority = sender.selectedSegmentIndex
+          selectedItem?.priority = sender.selectedSegmentIndex
     }
 
+    
+    //MARK: UITextView Delegate
+    func dismissKeyboard() {
+        view.endEditing(true)
+        
+    }
+    func textViewDidBeginEditing(_ textView: UITextView) {
+        textView.becomeFirstResponder()
+    }
+    
+    func textViewShouldEndEditing(_ textView: UITextView) -> Bool {
+        return true
+    }
+    func textViewDidEndEditing(_ textView: UITextView) {
+        selectedItem?.itemDescription = textView.text
+        textView.resignFirstResponder()
+    }
     /*
     // MARK: - Navigation
 

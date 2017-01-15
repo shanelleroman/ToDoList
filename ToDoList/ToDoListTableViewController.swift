@@ -19,7 +19,7 @@ class ToDoListTableViewController: UITableViewController, UITextFieldDelegate {
     private func loadSampleItems() {
         if let item1 = ToDoItem(completed: false, itemDescription: "finish project", timeCreated: NSDate(), timeCompleted: nil, priority: 0) {
             toDoItems.append(item1)
-
+            
         }
     }
     
@@ -96,6 +96,7 @@ class ToDoListTableViewController: UITableViewController, UITextFieldDelegate {
     }
     
     // MARK: actions
+    // unwind from both ItemInfo and Add Item Info View Controller
     @IBAction func unwindToList(sender: UIStoryboardSegue) {
         if let sourceViewController = sender.source as? AddItemViewController, let newItem = sourceViewController.toDoItem {
             // add the new Item to the list on the screen
@@ -104,6 +105,14 @@ class ToDoListTableViewController: UITableViewController, UITextFieldDelegate {
             tableView.insertRows(at: [newIndexPath], with: .automatic)
             
         }
+        else if let sourceViewController = sender.source as? ItemInfoViewController, let editedItem = sourceViewController.selectedItem, let index = sourceViewController.rowIndex{
+            print("successfully unwound back to the list!!")
+           let cellIndexPath = IndexPath(item: index, section: 0)
+            toDoItems[index] = editedItem
+            tableView.reloadRows(at: [cellIndexPath], with: .none)
+            
+         // edit which item was changed
+         }
         saveItems()
     }
     
@@ -223,10 +232,10 @@ class ToDoListTableViewController: UITableViewController, UITextFieldDelegate {
                 cell.priorityLabel.textColor = UIColor.red
             default: cell.priorityLabel.text = ""
             }
-
             
             
-            // sets tags to connect cell with appropriate element in items array
+            
+            
             cell.selectionStyle = UITableViewCellSelectionStyle.none
             
             
@@ -274,8 +283,6 @@ class ToDoListTableViewController: UITableViewController, UITextFieldDelegate {
         toDoItems.insert(item, at: to.row)
         
         
-        
-        
     }
     
     
@@ -297,18 +304,30 @@ class ToDoListTableViewController: UITableViewController, UITextFieldDelegate {
         switch (identifier) {
         case "addItem": print("add item!!")
         case "itemInfo":
-            if let itemDetailInfoViewController = segue.destination as? ItemInfoViewController {
+            // get access to the segue destination Navigation Controller
+            if let itemInfoNavigationController = segue.destination as? UINavigationController{
                 
-                // find the corresponding table Cell for the info button
-                if let buttonPressed = sender as? UIButton{
-                    if let index = getCellRow(sender: buttonPressed) {
-                        let selectedItem = toDoItems[index]
-                        itemDetailInfoViewController.selectedItem = selectedItem
-
+                // access the detail view controller
+                if let itemInfoDetailViewController = itemInfoNavigationController.topViewController as? ItemInfoViewController{
+                    
+                    // find the corresponding table Cell for the info button
+                    if let buttonPressed = sender as? UIButton{
+                        // get cell row
+                        if let index = getCellRow(sender: buttonPressed) {
+                            let selectedItem = toDoItems[index]
+                            itemInfoDetailViewController.selectedItem = selectedItem
+                            itemInfoDetailViewController.rowIndex = index
+                            
+                        }
+                        else {
+                            fatalError("couldn't get cell Row!")
+                        }
+                        
                     }
                     else {
-                        fatalError("couldn't get cell Row!")
+                        fatalError("sender isn't a UIButton!")
                     }
+                    
                     
                 }
                 else {
