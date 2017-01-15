@@ -8,6 +8,7 @@
 
 import Foundation
 
+// Class representing one item on the the to do list
 class ToDoItem {
     // MARK: properties
     var completed: Bool
@@ -29,6 +30,7 @@ class ToDoItem {
         }
     }
     
+    //MARK: methods
     func formatTime(time: NSDate) -> String {
         let formatter = DateFormatter()
         formatter.dateStyle = .long

@@ -21,8 +21,13 @@ class ToDoListTableViewController: UITableViewController, UITextFieldDelegate {
         
         if let item1 = ToDoItem(completed: false, itemDescription: "finish project", timeCreated: NSDate(), timeCompleted: nil) {
             toDoItems.append(item1)
+            
+           /* for _ in 0 ... 30 {
+                toDoItems.append(item1)
+            } */
         }
         
+
     }
     
     
@@ -30,16 +35,35 @@ class ToDoListTableViewController: UITableViewController, UITextFieldDelegate {
     // Toggles button color and updates appropriate ToDoItem's properties
     @IBAction private func toggleItem(_ sender: UIButton) {
         
+        // change to complete
         if sender.backgroundColor != UIColor.blue {
-            sender.backgroundColor = UIColor.blue
+            // update object
             toDoItems[sender.tag].completed = true
             toDoItems[sender.tag].timeCompleted = NSDate()
+            
+            // update color of cell
+            sender.backgroundColor = UIColor.blue
+            let indexPath = IndexPath(row: sender.tag, section: 0)
+            if let selectedCell = tableView.cellForRow(at: indexPath) as? ToDoItemTableViewCell {
+                selectedCell.itemDescription.textColor = UIColor.gray
+                selectedCell.itemDescription.isUserInteractionEnabled = false
+            }
+            
+            
+            
             
         }
         else {
             sender.backgroundColor = UIColor.white
             toDoItems[sender.tag].completed = false
             toDoItems[sender.tag].timeCompleted = nil
+            
+            // change color back
+            let indexPath = IndexPath(row: sender.tag, section: 0)
+            if let selectedCell = tableView.cellForRow(at: indexPath) as? ToDoItemTableViewCell {
+                selectedCell.itemDescription.textColor = UIColor.black
+                selectedCell.itemDescription.isUserInteractionEnabled = false
+            }
         }
         
     }
@@ -51,6 +75,7 @@ class ToDoListTableViewController: UITableViewController, UITextFieldDelegate {
             let newIndexPath = IndexPath(row: toDoItems.count, section: 0)
             toDoItems.append(newItem)
             tableView.insertRows(at: [newIndexPath], with: .automatic)
+            
         }
     }
     
@@ -71,6 +96,7 @@ class ToDoListTableViewController: UITableViewController, UITextFieldDelegate {
         
         // Uncomment the following line to display an Edit button in the navigation bar for this view controller.
         self.navigationItem.leftBarButtonItem = self.editButtonItem
+        toDoItems.sort(by: {$0.completed && !$1.completed })
         /* let addButton = UIBarButtonItem(barButtonSystemItem: UIBarButtonSystemItem.add
          , target: self, action: "addItem")
          self.navigationItem.setRightBarButton(addButton, animated: false) */
@@ -91,7 +117,17 @@ class ToDoListTableViewController: UITableViewController, UITextFieldDelegate {
     }
     
     // MARK: - Table view data source
-    
+    override func tableView(_ tableView: UITableView,
+                            didSelectRowAt indexPath: IndexPath) {
+        
+        if let selectedCell = tableView.cellForRow(at: indexPath) as? ToDoItemTableViewCell {
+            selectedCell.contentView.backgroundColor = UIColor.clear
+            selectedCell.itemDescription.isUserInteractionEnabled = true
+            selectedCell.itemDescription.becomeFirstResponder()
+
+        }
+        
+    }
     override func numberOfSections(in tableView: UITableView) -> Int {
         // return the number of sections
         return 1
@@ -109,48 +145,35 @@ class ToDoListTableViewController: UITableViewController, UITextFieldDelegate {
     
     override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         
-        // already created to do list items
-        if indexPath.section == 0 {
-            // display each to do list item
-            if let cell = tableView.dequeueReusableCell(withIdentifier: "ToDoTableViewCell", for: indexPath) as? ToDoItemTableViewCell {
-                
-                // gets correct item from toDoItems array
-                let item = toDoItems[indexPath.row]
-                
-                // configures cell appearance
-                if item.completed {
-                    cell.toggleButton.backgroundColor = UIColor.blue
-                    print("should be blue")
-                }
-                cell.itemDescription.text = item.itemDescription
-                
-                // sets tags to connect cell with appropriate element in items array
-                cell.toggleButton.tag = indexPath.row
-                cell.itemDescription.tag = indexPath.row
-                
-                
-                return cell
-                
+        
+        // display each to do list item
+        if let cell = tableView.dequeueReusableCell(withIdentifier: "ToDoTableViewCell", for: indexPath) as? ToDoItemTableViewCell {
+            
+            // gets correct item from toDoItems array
+            let item = toDoItems[indexPath.row]
+            
+            // configures cell appearance
+            if item.completed {
+                cell.toggleButton.backgroundColor = UIColor.blue
+                print("should be blue")
             }
-            else {
-                fatalError("Failed to correctly display ToDoItemCells")
-            }
+            cell.itemDescription.text = item.itemDescription
+            
+            // sets tags to connect cell with appropriate element in items array
+            cell.toggleButton.tag = indexPath.row
+            cell.itemDescription.tag = indexPath.row
+            cell.moreInformation.tag = indexPath.row
+            print("tag: \(indexPath.row) for \(cell.itemDescription)")
+            cell.selectionStyle = UITableViewCellSelectionStyle.none
+            
+            
+            return cell
             
         }
-            // ignore - earlier version
         else {
-            if let cell = tableView.dequeueReusableCell(withIdentifier: "EmptyCell", for: indexPath) as? EmptyItemTableViewCell {
-                // configures empty cell
-                cell.emptyDescription.text = nil
-                return cell
-                
-            }
-            else {
-                fatalError("Failed to correctly display Empty cell!")
-                
-            }
-            
+            fatalError("Failed to correctly display ToDoItemCells")
         }
+        
         
         
     }
@@ -179,12 +202,14 @@ class ToDoListTableViewController: UITableViewController, UITextFieldDelegate {
     }
     
     
-    /*
+    
      // Override to support rearranging the table view.
      override func tableView(_ tableView: UITableView, moveRowAt fromIndexPath: IndexPath, to: IndexPath) {
+        
+        
      
      }
-     */
+    
     
     /*
      // Override to support conditional rearranging of the table view.
@@ -206,12 +231,13 @@ class ToDoListTableViewController: UITableViewController, UITextFieldDelegate {
         case "addItem": print("add item!!")
         case "itemInfo":
             if let itemDetailInfoViewController = segue.destination as? ItemInfoViewController {
-
+                
                 // find the corresponding table Cell for the info button
                 if let buttonPressed = sender as? UIButton{
+                    print("button Pressed tag: \(buttonPressed.tag)")
                     let selectedItem = toDoItems[buttonPressed.tag]
                     itemDetailInfoViewController.selectedItem = selectedItem
-                
+                    
                 }
                 else {
                     fatalError("not a TableViewCell")
@@ -224,9 +250,6 @@ class ToDoListTableViewController: UITableViewController, UITextFieldDelegate {
         default: print("not matching!")
         }
         
-
-        // Get the new view controller using segue.destinationViewController.
-        // Pass the selected object to the new view controller.
     }
     
     
