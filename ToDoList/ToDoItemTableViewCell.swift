@@ -13,6 +13,7 @@ class ToDoItemTableViewCell: UITableViewCell {
     @IBOutlet weak var toggleButton: UIButton!
     @IBOutlet weak var itemDescription: UITextField!
     @IBOutlet weak var moreInformation: UIButton!
+    @IBOutlet weak var priorityLabel: UILabel!
 
     
     override func awakeFromNib() {

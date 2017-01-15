@@ -7,27 +7,48 @@
 //
 
 import UIKit
+import os.log
 
 class ToDoListTableViewController: UITableViewController, UITextFieldDelegate {
     
-    // todo list items
+    // list of to do's
     var toDoItems = [ToDoItem] ()
     
     
     // MARK: private functions
-    private func loadItems() {
-        // sample items for testing
-        
-        
-        if let item1 = ToDoItem(completed: false, itemDescription: "finish project", timeCreated: NSDate(), timeCompleted: nil) {
+    private func loadSampleItems() {
+        if let item1 = ToDoItem(completed: false, itemDescription: "finish project", timeCreated: NSDate(), timeCompleted: nil, priority: 0) {
             toDoItems.append(item1)
-            
-           /* for _ in 0 ... 30 {
-                toDoItems.append(item1)
-            } */
-        }
-        
 
+        }
+    }
+    
+    // load the archived items
+    private func loadItems() -> [ToDoItem]? {
+        return NSKeyedUnarchiver.unarchiveObject(withFile: ToDoItem.ArchiveURL.path) as? [ToDoItem]
+        
+    }
+    
+    // archive the items
+    private func saveItems() {
+        let isSuccessfulSave = NSKeyedArchiver.archiveRootObject(toDoItems, toFile: ToDoItem.ArchiveURL.path)
+        
+        if isSuccessfulSave {
+            os_log("successfully saved.", log: OSLog.default, type: .debug)
+        } else {
+            os_log("Failed to save ...", log: OSLog.default, type: .error)
+        }
+    }
+    
+    // get the cell row from the button pressed
+    private func getCellRow(sender: UIButton) ->Int? {
+        let pointInTable = sender.convert(sender.bounds.origin, to: self.tableView)
+        if let cellIndexPath = self.tableView.indexPathForRow(at: pointInTable) {
+            return cellIndexPath.row
+        }
+        return nil
+        
+        
     }
     
     
@@ -35,35 +56,41 @@ class ToDoListTableViewController: UITableViewController, UITextFieldDelegate {
     // Toggles button color and updates appropriate ToDoItem's properties
     @IBAction private func toggleItem(_ sender: UIButton) {
         
-        // change to complete
+        // to do completed
         if sender.backgroundColor != UIColor.blue {
-            // update object
-            toDoItems[sender.tag].completed = true
-            toDoItems[sender.tag].timeCompleted = NSDate()
-            
-            // update color of cell
-            sender.backgroundColor = UIColor.blue
-            let indexPath = IndexPath(row: sender.tag, section: 0)
-            if let selectedCell = tableView.cellForRow(at: indexPath) as? ToDoItemTableViewCell {
-                selectedCell.itemDescription.textColor = UIColor.gray
-                selectedCell.itemDescription.isUserInteractionEnabled = false
+            // update item object
+            if let index = getCellRow(sender: sender) {
+                
+                toDoItems[index].completed = true
+                toDoItems[index].timeCompleted = NSDate()
+                
+                // update color of cell
+                sender.backgroundColor = UIColor.blue
+                let indexPath = IndexPath(row: index, section: 0)
+                if let selectedCell = tableView.cellForRow(at: indexPath) as? ToDoItemTableViewCell {
+                    selectedCell.itemDescription.textColor = UIColor.gray
+                    selectedCell.itemDescription.isUserInteractionEnabled = false
+                }
+                
             }
-            
-            
             
             
         }
         else {
             sender.backgroundColor = UIColor.white
-            toDoItems[sender.tag].completed = false
-            toDoItems[sender.tag].timeCompleted = nil
-            
-            // change color back
-            let indexPath = IndexPath(row: sender.tag, section: 0)
-            if let selectedCell = tableView.cellForRow(at: indexPath) as? ToDoItemTableViewCell {
-                selectedCell.itemDescription.textColor = UIColor.black
-                selectedCell.itemDescription.isUserInteractionEnabled = false
+            if let index = getCellRow(sender: sender ) {
+                // update item object
+                toDoItems[index].completed = false
+                toDoItems[index].timeCompleted = nil
+                
+                // change color back
+                let indexPath = IndexPath(row: index, section: 0)
+                if let selectedCell = tableView.cellForRow(at: indexPath) as? ToDoItemTableViewCell {
+                    selectedCell.itemDescription.textColor = UIColor.black
+                    selectedCell.itemDescription.isUserInteractionEnabled = false
+                }
             }
+            
         }
         
     }
@@ -77,11 +104,29 @@ class ToDoListTableViewController: UITableViewController, UITextFieldDelegate {
             tableView.insertRows(at: [newIndexPath], with: .automatic)
             
         }
+        saveItems()
     }
     
     // update items array after finish cell
     @IBAction func updateItem(_ sender: UITextField) {
-        toDoItems[sender.tag].itemDescription = sender.text
+        //toDoItems[sender.tag].itemDescription = sender.text
+        var cell: UITableViewCell?
+        var parentView = sender.superview
+        while (parentView != nil) {
+            if parentView is UITableViewCell {
+                cell = parentView as! UITableViewCell?
+                break
+            }
+            parentView = parentView?.superview
+        }
+        if (cell != nil) {
+            let indexPath = self.tableView.indexPath(for: cell!)
+            print("row: \((indexPath?.row)!)")
+            toDoItems[(indexPath?.row)!].itemDescription = sender.text
+            print("new description: \(sender.text)")
+        }
+        
+        
         
     }
     
@@ -89,14 +134,20 @@ class ToDoListTableViewController: UITableViewController, UITextFieldDelegate {
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        loadItems()
+        if let savedItems = loadItems() {
+            toDoItems += savedItems
+        }
+        else {
+            loadSampleItems()
+        }
+        
         
         // Uncomment the following line to preserve selection between presentations
         // self.clearsSelectionOnViewWillAppear = false
         
         // Uncomment the following line to display an Edit button in the navigation bar for this view controller.
         self.navigationItem.leftBarButtonItem = self.editButtonItem
-        toDoItems.sort(by: {$0.completed && !$1.completed })
+        
         /* let addButton = UIBarButtonItem(barButtonSystemItem: UIBarButtonSystemItem.add
          , target: self, action: "addItem")
          self.navigationItem.setRightBarButton(addButton, animated: false) */
@@ -116,6 +167,7 @@ class ToDoListTableViewController: UITableViewController, UITextFieldDelegate {
         
     }
     
+    
     // MARK: - Table view data source
     override func tableView(_ tableView: UITableView,
                             didSelectRowAt indexPath: IndexPath) {
@@ -124,7 +176,7 @@ class ToDoListTableViewController: UITableViewController, UITextFieldDelegate {
             selectedCell.contentView.backgroundColor = UIColor.clear
             selectedCell.itemDescription.isUserInteractionEnabled = true
             selectedCell.itemDescription.becomeFirstResponder()
-
+            
         }
         
     }
@@ -155,15 +207,26 @@ class ToDoListTableViewController: UITableViewController, UITextFieldDelegate {
             // configures cell appearance
             if item.completed {
                 cell.toggleButton.backgroundColor = UIColor.blue
-                print("should be blue")
             }
             cell.itemDescription.text = item.itemDescription
+            switch item.priority {
+            case 0:
+                cell.priorityLabel.text = ""
+            case 1:
+                cell.priorityLabel.text = "!"
+                cell.priorityLabel.textColor = UIColor.red
+            case 2:
+                cell.priorityLabel.text = "!!"
+                cell.priorityLabel.textColor = UIColor.red
+            case 3:
+                cell.priorityLabel.text = "!!!"
+                cell.priorityLabel.textColor = UIColor.red
+            default: cell.priorityLabel.text = ""
+            }
+
+            
             
             // sets tags to connect cell with appropriate element in items array
-            cell.toggleButton.tag = indexPath.row
-            cell.itemDescription.tag = indexPath.row
-            cell.moreInformation.tag = indexPath.row
-            print("tag: \(indexPath.row) for \(cell.itemDescription)")
             cell.selectionStyle = UITableViewCellSelectionStyle.none
             
             
@@ -195,6 +258,7 @@ class ToDoListTableViewController: UITableViewController, UITextFieldDelegate {
             // Delete the row from the data source
             toDoItems.remove(at: indexPath.row)
             tableView.deleteRows(at: [indexPath], with: .fade)
+            saveItems()
             
         } else if editingStyle == .insert {
             // Create a new instance of the appropriate class, insert it into the array, and add a new row to the table view
@@ -203,12 +267,16 @@ class ToDoListTableViewController: UITableViewController, UITextFieldDelegate {
     
     
     
-     // Override to support rearranging the table view.
-     override func tableView(_ tableView: UITableView, moveRowAt fromIndexPath: IndexPath, to: IndexPath) {
+    // Override to support rearranging the table view.
+    override func tableView(_ tableView: UITableView, moveRowAt fromIndexPath: IndexPath, to: IndexPath) {
+        let item = toDoItems[fromIndexPath.row];
+        toDoItems.remove(at: fromIndexPath.row);
+        toDoItems.insert(item, at: to.row)
         
         
-     
-     }
+        
+        
+    }
     
     
     /*
@@ -226,7 +294,6 @@ class ToDoListTableViewController: UITableViewController, UITextFieldDelegate {
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
         super.prepare(for: segue, sender: sender)
         let identifier = segue.identifier ?? ""
-        print(identifier)
         switch (identifier) {
         case "addItem": print("add item!!")
         case "itemInfo":
@@ -234,9 +301,14 @@ class ToDoListTableViewController: UITableViewController, UITextFieldDelegate {
                 
                 // find the corresponding table Cell for the info button
                 if let buttonPressed = sender as? UIButton{
-                    print("button Pressed tag: \(buttonPressed.tag)")
-                    let selectedItem = toDoItems[buttonPressed.tag]
-                    itemDetailInfoViewController.selectedItem = selectedItem
+                    if let index = getCellRow(sender: buttonPressed) {
+                        let selectedItem = toDoItems[index]
+                        itemDetailInfoViewController.selectedItem = selectedItem
+
+                    }
+                    else {
+                        fatalError("couldn't get cell Row!")
+                    }
                     
                 }
                 else {

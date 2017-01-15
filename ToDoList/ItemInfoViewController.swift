@@ -13,15 +13,25 @@ class ItemInfoViewController: UIViewController {
     //MARK: properties
     var selectedItem: ToDoItem?
     
-    @IBOutlet weak var timeCreated: UILabel!
     @IBOutlet weak var navigationBar: UINavigationItem!
+    @IBOutlet weak var itemDescription: UITextView!
+    @IBOutlet weak var timeCreated: UILabel!
     @IBOutlet weak var timeCompleted: UILabel!
+    @IBOutlet weak var priorityControl: UISegmentedControl!
+  
 
     override func viewDidLoad() {
         super.viewDidLoad()
         if let item = selectedItem {
-            navigationBar.title = item.itemDescription
+            // title
+            navigationBar.title = "Individual To Do"
+            
+            itemDescription.text = item.itemDescription
+            itemDescription.layer.borderWidth = 1
+            itemDescription.layer.cornerRadius = 10
+            itemDescription.layer.borderColor = UIColor.black.cgColor
             timeCreated.text = "Time Created: " + item.formatTime(time: item.timeCreated!)
+            priorityControl.selectedSegmentIndex = (selectedItem?.priority)!
             if item.completed {
                 timeCompleted.text = "Time Completed: " +  item.formatTime(time: item.timeCompleted!)
             }
@@ -38,6 +48,9 @@ class ItemInfoViewController: UIViewController {
         // Dispose of any resources that can be recreated.
     }
     
+    @IBAction func changedPriority(_ sender: UISegmentedControl) {
+        selectedItem?.priority = sender.selectedSegmentIndex
+    }
 
     /*
     // MARK: - Navigation

@@ -13,6 +13,7 @@ class AddItemViewController: UIViewController, UITextFieldDelegate {
     //MARK: properties
     @IBOutlet weak var newItemTextField: UITextField!
     @IBOutlet weak var saveButton: UIBarButtonItem!
+    @IBOutlet weak var priorityControl: UISegmentedControl!
 
     // create a new To Do Item
     var toDoItem: ToDoItem?
@@ -21,6 +22,7 @@ class AddItemViewController: UIViewController, UITextFieldDelegate {
     //MARK: generic functions
     override func viewDidLoad() {
         super.viewDidLoad()
+        
         
         /*let currentTime = NSDate()
         timeCreated.text = formatTime(time: currentTime) */
@@ -80,11 +82,10 @@ class AddItemViewController: UIViewController, UITextFieldDelegate {
         if let button = sender as? UIBarButtonItem, button == saveButton {
             let itemDescription = newItemTextField.text ?? ""
             let completed = false
-            toDoItem = ToDoItem(completed: completed, itemDescription: itemDescription, timeCreated: NSDate(), timeCompleted: nil)
-           
+            let priorityValue = priorityControl.selectedSegmentIndex
             
+            toDoItem = ToDoItem(completed: completed, itemDescription: itemDescription, timeCreated: NSDate(), timeCompleted: nil, priority: priorityValue)
            
-            
             
             
         }
