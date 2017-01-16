@@ -12,6 +12,7 @@ import os.log
 
 // Class representing one item on the the to do list
 class ToDoItem: NSObject, NSCoding {
+    
     // MARK: properties
     var completed: Bool
     var itemDescription: String?
@@ -28,7 +29,7 @@ class ToDoItem: NSObject, NSCoding {
     init?(completed: Bool, itemDescription: String?, timeCreated: NSDate?, timeCompleted: NSDate?, priority: Int)
     {
         if let itemInfo = itemDescription {
-            self.completed = false
+            self.completed = completed
             self.itemDescription = itemInfo
             self.timeCreated = timeCreated
             self.timeCompleted = nil

@@ -20,6 +20,7 @@ class ToDoItemTableViewCell: UITableViewCell {
         super.awakeFromNib()
         // Initialization code
         
+        // color of toggle button
         toggleButton.backgroundColor = UIColor.white
         toggleButton.layer.cornerRadius = toggleButton.frame.height/2
         toggleButton.layer.borderWidth = 1

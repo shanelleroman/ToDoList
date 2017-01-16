@@ -23,7 +23,7 @@ class ToDoListTableViewController: UITableViewController, UITextFieldDelegate {
         }
     }
     
-    // load the archived items
+    // load the archived items from before app was quit
     private func loadItems() -> [ToDoItem]? {
         return NSKeyedUnarchiver.unarchiveObject(withFile: ToDoItem.ArchiveURL.path) as? [ToDoItem]
         
@@ -55,14 +55,17 @@ class ToDoListTableViewController: UITableViewController, UITextFieldDelegate {
     // blue - completed, white - not completed!
     // Toggles button color and updates appropriate ToDoItem's properties
     @IBAction private func toggleItem(_ sender: UIButton) {
-        
+       
+       
         // to do completed
         if sender.backgroundColor != UIColor.blue {
+            
             // update item object
             if let index = getCellRow(sender: sender) {
                 
                 toDoItems[index].completed = true
                 toDoItems[index].timeCompleted = NSDate()
+                saveItems()
                 
                 // update color of cell
                 sender.backgroundColor = UIColor.blue
@@ -82,7 +85,7 @@ class ToDoListTableViewController: UITableViewController, UITextFieldDelegate {
                 // update item object
                 toDoItems[index].completed = false
                 toDoItems[index].timeCompleted = nil
-                
+                saveItems()
                 // change color back
                 let indexPath = IndexPath(row: index, section: 0)
                 if let selectedCell = tableView.cellForRow(at: indexPath) as? ToDoItemTableViewCell {
@@ -98,27 +101,31 @@ class ToDoListTableViewController: UITableViewController, UITextFieldDelegate {
     // MARK: actions
     // unwind from both ItemInfo and Add Item Info View Controller
     @IBAction func unwindToList(sender: UIStoryboardSegue) {
+        
         if let sourceViewController = sender.source as? AddItemViewController, let newItem = sourceViewController.toDoItem {
             // add the new Item to the list on the screen
             let newIndexPath = IndexPath(row: toDoItems.count, section: 0)
+
             toDoItems.append(newItem)
+            // reloading because had issue with the button colors
             tableView.insertRows(at: [newIndexPath], with: .automatic)
+            tableView.reloadRows(at: [newIndexPath], with: .automatic)
             
         }
         else if let sourceViewController = sender.source as? ItemInfoViewController, let editedItem = sourceViewController.selectedItem, let index = sourceViewController.rowIndex{
-            print("successfully unwound back to the list!!")
-           let cellIndexPath = IndexPath(item: index, section: 0)
+            
+            let cellIndexPath = IndexPath(item: index, section: 0)
             toDoItems[index] = editedItem
             tableView.reloadRows(at: [cellIndexPath], with: .none)
             
-         // edit which item was changed
-         }
+        }
         saveItems()
     }
     
-    // update items array after finish cell
+    // update items array after finish editing a cell
     @IBAction func updateItem(_ sender: UITextField) {
-        //toDoItems[sender.tag].itemDescription = sender.text
+        
+        // get the correct cell
         var cell: UITableViewCell?
         var parentView = sender.superview
         while (parentView != nil) {
@@ -128,11 +135,12 @@ class ToDoListTableViewController: UITableViewController, UITextFieldDelegate {
             }
             parentView = parentView?.superview
         }
+        // update the correct item's description
         if (cell != nil) {
             let indexPath = self.tableView.indexPath(for: cell!)
-            print("row: \((indexPath?.row)!)")
+            
             toDoItems[(indexPath?.row)!].itemDescription = sender.text
-            print("new description: \(sender.text)")
+            
         }
         
         
@@ -144,11 +152,19 @@ class ToDoListTableViewController: UITableViewController, UITextFieldDelegate {
         super.viewDidLoad()
         
         if let savedItems = loadItems() {
+            
             toDoItems += savedItems
         }
         else {
+            
             loadSampleItems()
         }
+        
+        
+        
+        
+        
+        
         
         
         // Uncomment the following line to preserve selection between presentations
@@ -170,12 +186,17 @@ class ToDoListTableViewController: UITableViewController, UITextFieldDelegate {
     }
     
     // MARK: Text Field Delegate
+    
     func textFieldShouldReturn(_ textField: UITextField) -> Bool {
         textField.resignFirstResponder()
         return true
         
     }
     
+    
+    /* func dismissKeyboard() {
+     view.endEditing(true)
+     } */
     
     // MARK: - Table view data source
     override func tableView(_ tableView: UITableView,
@@ -195,11 +216,9 @@ class ToDoListTableViewController: UITableViewController, UITextFieldDelegate {
     }
     
     override func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        // return the number of rows
-        if section == 0  {
-            return toDoItems.count
-        }
-        return 1
+        
+        return toDoItems.count
+        
         
     }
     
@@ -216,7 +235,12 @@ class ToDoListTableViewController: UITableViewController, UITextFieldDelegate {
             // configures cell appearance
             if item.completed {
                 cell.toggleButton.backgroundColor = UIColor.blue
+                
             }
+            else {
+                cell.toggleButton.backgroundColor = UIColor.white
+            }
+            
             cell.itemDescription.text = item.itemDescription
             switch item.priority {
             case 0:
@@ -232,9 +256,7 @@ class ToDoListTableViewController: UITableViewController, UITextFieldDelegate {
                 cell.priorityLabel.textColor = UIColor.red
             default: cell.priorityLabel.text = ""
             }
-            
-            
-            
+
             
             cell.selectionStyle = UITableViewCellSelectionStyle.none
             
@@ -243,8 +265,8 @@ class ToDoListTableViewController: UITableViewController, UITextFieldDelegate {
             
         }
         else {
-            fatalError("Failed to correctly display ToDoItemCells")
-        }
+        
+            fatalError("Failed to correctly display ToDoItemCells.")        }
         
         
         
@@ -269,8 +291,6 @@ class ToDoListTableViewController: UITableViewController, UITextFieldDelegate {
             tableView.deleteRows(at: [indexPath], with: .fade)
             saveItems()
             
-        } else if editingStyle == .insert {
-            // Create a new instance of the appropriate class, insert it into the array, and add a new row to the table view
         }
     }
     
@@ -302,7 +322,7 @@ class ToDoListTableViewController: UITableViewController, UITextFieldDelegate {
         super.prepare(for: segue, sender: sender)
         let identifier = segue.identifier ?? ""
         switch (identifier) {
-        case "addItem": print("add item!!")
+        case "addItem": break
         case "itemInfo":
             // get access to the segue destination Navigation Controller
             if let itemInfoNavigationController = segue.destination as? UINavigationController{
@@ -320,25 +340,29 @@ class ToDoListTableViewController: UITableViewController, UITextFieldDelegate {
                             
                         }
                         else {
-                            fatalError("couldn't get cell Row!")
+                            os_log("couldn't get cell row", log: OSLog.default, type: .error)
+                            
                         }
                         
                     }
                     else {
-                        fatalError("sender isn't a UIButton!")
+                        os_log("sender isn't a UI button", log: OSLog.default, type: .error)
+                        
                     }
                     
                     
                 }
                 else {
-                    fatalError("not a TableViewCell")
+                    os_log("not a Table View Cell", log: OSLog.default, type: .error)
+
+                
                 }
             }
             else {
-                fatalError("\(segue.destination)")
-                //fatalError("wrong segue Destination")
+                os_log("Wrong segue destination", log: OSLog.default, type: .error)
+
             }
-        default: print("not matching!")
+        default: break
         }
         
     }

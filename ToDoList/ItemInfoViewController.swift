@@ -33,12 +33,13 @@ class ItemInfoViewController: UIViewController, UITextViewDelegate{
         if let item = selectedItem {
             // title
             navigationBar.title = "Individual To Do"
-            
+            // set description
             itemDescription.text = item.itemDescription
             itemDescription.layer.borderWidth = 1
             itemDescription.layer.cornerRadius = 10
             itemDescription.layer.borderColor = UIColor.black.cgColor
             itemDescription.isEditable = true
+            
             timeCreated.text = "Time Created: " + item.formatTime(time: item.timeCreated!)
             priorityControl.selectedSegmentIndex = (selectedItem?.priority)!
             if item.completed {

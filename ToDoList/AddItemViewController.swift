@@ -7,6 +7,7 @@
 //
 
 import UIKit
+import os.log
 
 class AddItemViewController: UIViewController, UITextFieldDelegate {
     
@@ -23,20 +24,11 @@ class AddItemViewController: UIViewController, UITextFieldDelegate {
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        
-        /*let currentTime = NSDate()
-        timeCreated.text = formatTime(time: currentTime) */
         updateSaveButton()
         // Do any additional setup after loading the view.
     }
     
-    /*public func formatTime(time: NSDate) ->String {
-        let dateFormatter = DateFormatter()
-        dateFormatter.dateStyle = .long
-        dateFormatter.timeStyle = .medium
-        return dateFormatter.string(from: time as Date)
-        
-    }*/ 
+
 
     override func didReceiveMemoryWarning() {
         super.didReceiveMemoryWarning()
@@ -83,14 +75,15 @@ class AddItemViewController: UIViewController, UITextFieldDelegate {
             let itemDescription = newItemTextField.text ?? ""
             let completed = false
             let priorityValue = priorityControl.selectedSegmentIndex
-            
+            // create a new toDoItem, pass to the previous view controller
             toDoItem = ToDoItem(completed: completed, itemDescription: itemDescription, timeCreated: NSDate(), timeCompleted: nil, priority: priorityValue)
            
             
             
         }
         else {
-            fatalError("wrong button!! Not save button")
+            os_log("Wrong button!!", log: OSLog.default, type: .error)
+
         }
         // Get the new view controller using segue.destinationViewController.
         // Pass the selected object to the new view controller.
